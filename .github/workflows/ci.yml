@@ -1,0 +1,14 @@
+name: ci
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: lint and test
+        run: |
+          echo "Static site — no build step yet."
+          make test
