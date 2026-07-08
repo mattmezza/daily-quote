@@ -2,9 +2,9 @@ services:
   app:
     build: .
     ports:
-      - "${PORT}:8000"
+      - "${PORT}:80"
     restart: unless-stopped
     mem_limit: 256m
     cpus: 0.5
     environment:
-      - PORT=8000
+      - PORT=80
