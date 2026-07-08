@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>daily‑quote</title>
+  <script src="quotes.js"></script>
+  <style>
+    /* Reset */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #F9F6F1;
+      color: #2C2C2C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Main container */
+    .quote-container {
+      max-width: 640px;
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* Quote text */
+    .quote-text {
+      font-family: Georgia, "Palatino Linotype", Palatino, "Book Antiqua", serif;
+      font-size: 1.75rem;
+      line-height: 1.6;
+      font-weight: 400;
+      color: #2C2C2C;
+      letter-spacing: 0.01em;
+    }
+
+    /* Drop cap — first letter */
+    .quote-text::first-letter {
+      font-size: 3.2rem;
+      line-height: 0.8;
+      padding-right: 0.08em;
+      color: #C4A882;
+      float: left;
+    }
+
+    /* Decorative separator */
+    .separator {
+      margin: 1.75rem auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .separator::before,
+    .separator::after {
+      content: "";
+      display: block;
+      width: 1.5rem;
+      height: 1px;
+      background: #C4A882;
+    }
+
+    .separator-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #C4A882;
+    }
+
+    /* Author */
+    .quote-author {
+      font-size: 0.875rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #8B7E74;
+    }
+
+    /* Attribution — hidden link for now */
+    .attribution {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      color: #D4CEC6;
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 480px) {
+      .quote-text {
+        font-size: 1.35rem;
+      }
+
+      .quote-text::first-letter {
+        font-size: 2.6rem;
+      }
+
+      .quote-container {
+        padding: 1.5rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0s !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="quote-container">
+    <p class="quote-text" id="quote-text"></p>
+    <div class="separator" aria-hidden="true">
+      <span class="separator-dot"></span>
+    </div>
+    <p class="quote-author" id="quote-author"></p>
+  </main>
+  <p class="attribution">daily‑quote</p>
+
+  <script>
+    function getRandomInt(max) {
+      return Math.floor(Math.random() * max);
+    }
+
+    function displayRandomQuote() {
+      const index = getRandomInt(QUOTES.length);
+      const quote = QUOTES[index];
+      document.getElementById('quote-text').textContent = quote.text;
+      document.getElementById('quote-author').textContent = quote.author;
+    }
+
+    document.addEventListener('DOMContentLoaded', displayRandomQuote);
+  </script>
+</body>
+</html>
