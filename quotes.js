@@ -53,16 +53,16 @@ const QUOTES = [
     author: "African Proverb"
   },
   {
-    text: "Imagination is more important than knowledge.",
-    author: "Albert Einstein"
+    text: "Nothing in life is to be feared, it is only to be understood.",
+    author: "Marie Curie"
+  },
+  {
+    text: "I've learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.",
+    author: "Maya Angelou"
   },
   {
     text: "The secret of getting ahead is getting started.",
     author: "Mark Twain"
-  },
-  {
-    text: "No one can make you feel inferior without your consent.",
-    author: "Eleanor Roosevelt"
   },
   {
     text: "Everything you can imagine is real.",
@@ -77,8 +77,8 @@ const QUOTES = [
     author: "Benjamin Franklin"
   },
   {
-    text: "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
-    author: "Ralph Waldo Emerson"
+    text: "It always seems impossible until it's done.",
+    author: "Nelson Mandela"
   },
   {
     text: "Not all those who wander are lost.",
@@ -105,12 +105,8 @@ const QUOTES = [
     author: "Mother Teresa"
   },
   {
-    text: "The only person you are destined to become is the person you decide to be.",
-    author: "Ralph Waldo Emerson"
-  },
-  {
-    text: "Everything has beauty, but not everyone sees it.",
-    author: "Confucius"
+    text: "Somewhere, something incredible is waiting to be known.",
+    author: "Carl Sagan"
   },
   {
     text: "Success is not final, failure is not fatal: it is the courage to continue that counts.",
@@ -153,12 +149,8 @@ const QUOTES = [
     author: "Martin Luther King Jr."
   },
   {
-    text: "The function of education is to teach one to think intensively and to think critically.",
-    author: "Martin Luther King Jr."
-  },
-  {
-    text: "A person who never made a mistake never tried anything new.",
-    author: "Albert Einstein"
+    text: "The wound is the place where the Light enters you.",
+    author: "Rumi"
   },
   {
     text: "Fall seven times, stand up eight.",
@@ -173,12 +165,8 @@ const QUOTES = [
     author: "Fyodor Dostoevsky"
   },
   {
-    text: "Try not to become a man of success, but rather try to become a man of value.",
-    author: "Albert Einstein"
-  },
-  {
-    text: "It is during our darkest moments that we must focus to see the light.",
-    author: "Aristotle"
+    text: "Walk as if you are kissing the Earth with your feet.",
+    author: "Thich Nhat Hanh"
   },
   {
     text: "Happiness is not something ready made. It comes from your own actions.",
@@ -193,11 +181,23 @@ const QUOTES = [
     author: "Mary McLeod Bethune"
   },
   {
-    text: "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.",
-    author: "Ralph Waldo Emerson"
+    text: "What you do makes a difference, and you have to decide what kind of difference you want to make.",
+    author: "Jane Goodall"
   },
   {
-    text: "If you can't explain it simply, you don't understand it well enough.",
-    author: "Albert Einstein"
+    text: "The present is theirs; the future, for which I really worked, is mine.",
+    author: "Nikola Tesla"
+  },
+  {
+    text: "Life is an unfoldment, and the further we travel the more truth we can comprehend.",
+    author: "Hypatia"
+  },
+  {
+    text: "If you surrender to the air, you can ride it.",
+    author: "Toni Morrison"
+  },
+  {
+    text: "The only thing that makes life possible is permanent, intolerable uncertainty.",
+    author: "Ursula K. Le Guin"
   }
 ];
