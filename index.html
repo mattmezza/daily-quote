@@ -44,6 +44,12 @@
       font-weight: 400;
       color: #2C2C2C;
       letter-spacing: 0.01em;
+      opacity: 0;
+      transition: opacity 400ms ease;
+    }
+
+    .quote-text.visible {
+      opacity: 1;
     }
 
     /* Drop cap — first letter */
@@ -87,9 +93,42 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: #8B7E74;
+      opacity: 0;
+      transition: opacity 400ms ease;
     }
 
-    /* Attribution — hidden link for now */
+    .quote-author.visible {
+      opacity: 1;
+    }
+
+    /* Refresh button */
+    .refresh-btn {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.6rem 1.5rem;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8B7E74;
+      background: transparent;
+      border: 1px solid #D4CEC6;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 250ms ease;
+    }
+
+    .refresh-btn:hover {
+      color: #2C2C2C;
+      border-color: #C4A882;
+      background: rgba(196, 168, 130, 0.08);
+    }
+
+    .refresh-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Attribution */
     .attribution {
       position: fixed;
       bottom: 1rem;
@@ -112,6 +151,11 @@
       .quote-container {
         padding: 1.5rem;
       }
+
+      .refresh-btn {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.75rem;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -128,6 +172,7 @@
       <span class="separator-dot"></span>
     </div>
     <p class="quote-author" id="quote-author"></p>
+    <button class="refresh-btn" id="refresh-btn">New Quote</button>
   </main>
   <p class="attribution">daily‑quote</p>
 
@@ -136,14 +181,53 @@
       return Math.floor(Math.random() * max);
     }
 
-    function displayRandomQuote() {
-      const index = getRandomInt(QUOTES.length);
-      const quote = QUOTES[index];
-      document.getElementById('quote-text').textContent = quote.text;
-      document.getElementById('quote-author').textContent = quote.author;
+    let refreshTimeout = null;
+
+    function refreshQuote() {
+      if (refreshTimeout) return;
+
+      const textEl = document.getElementById('quote-text');
+      const authorEl = document.getElementById('quote-author');
+      const btn = document.getElementById('refresh-btn');
+
+      refreshTimeout = true;
+      btn.disabled = true;
+
+      // Fade out
+      textEl.classList.remove('visible');
+      authorEl.classList.remove('visible');
+
+      setTimeout(() => {
+        const index = getRandomInt(QUOTES.length);
+        textEl.textContent = QUOTES[index].text;
+        authorEl.textContent = QUOTES[index].author;
+
+        // Fade in
+        textEl.classList.add('visible');
+        authorEl.classList.add('visible');
+        refreshTimeout = null;
+        btn.disabled = false;
+      }, 400);
     }
 
-    document.addEventListener('DOMContentLoaded', displayRandomQuote);
+    document.addEventListener('DOMContentLoaded', () => {
+      const textEl = document.getElementById('quote-text');
+      const authorEl = document.getElementById('quote-author');
+
+      // Set initial quote
+      const index = getRandomInt(QUOTES.length);
+      textEl.textContent = QUOTES[index].text;
+      authorEl.textContent = QUOTES[index].author;
+
+      // Fade in on next tick (no flash on load)
+      setTimeout(() => {
+        textEl.classList.add('visible');
+        authorEl.classList.add('visible');
+      }, 20);
+
+      // Wire up button
+      document.getElementById('refresh-btn').addEventListener('click', refreshQuote);
+    });
   </script>
 </body>
 </html>
