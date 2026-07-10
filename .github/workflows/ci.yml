@@ -1,6 +1,8 @@
 name: ci
 on:
   pull_request:
+  push:
+    tags: ['v*']
 permissions:
   contents: read
 jobs:
@@ -10,5 +12,28 @@ jobs:
       - uses: actions/checkout@v4
       - name: lint and test
         run: |
-          echo "Static site — no build step yet."
+          echo "Static site — linting HTML"
           make test
+
+  push-image:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          docker build -t daily-quote:${TAG} .
+
+      - name: Push to products host
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          IMAGE="daily-quote:${TAG}"
+          echo "${DEPLOY_KEY}" > /tmp/ci_key && chmod 600 /tmp/ci_key
+          docker pussh "${IMAGE}" deployer@${DEPLOY_HOST} -i /tmp/ci_key
+          rm -f /tmp/ci_key
