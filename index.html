@@ -456,10 +456,150 @@
       bottom: 1rem;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: var(--mood-border);
       letter-spacing: 0.04em;
-      transition: color 600ms ease;
+      transition: color 600ms ease, opacity 600ms ease;
+      z-index: 10;
+    }
+
+    .attribution a {
+      color: inherit;
+      text-decoration: none;
+      transition: opacity 250ms ease;
+    }
+
+    .attribution a:hover {
+      opacity: 0.7;
+    }
+
+    .attribution .sep {
+      margin: 0 0.4rem;
+      opacity: 0.5;
+    }
+
+    /* About modal */
+    .about-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 400ms ease;
+      z-index: 90;
+    }
+
+    .about-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .about-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.96);
+      max-width: 440px;
+      width: calc(100% - 2rem);
+      background: #F9F6F1;
+      color: #2C2C2C;
+      border-radius: 6px;
+      padding: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 400ms ease, transform 400ms ease;
+      z-index: 100;
+    }
+
+    [data-theme="dark"] .about-modal {
+      background: #1A1A1A;
+      color: #E0E0E0;
+    }
+
+    .about-modal.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .about-close {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 1px solid var(--mood-border);
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--mood-text-subtle);
+      transition: all 250ms ease;
+    }
+
+    .about-close:hover {
+      color: #2C2C2C;
+      border-color: var(--mood-accent);
+    }
+
+    [data-theme="dark"] .about-close:hover {
+      color: #E0E0E0;
+    }
+
+    .about-body {
+      text-align: center;
+    }
+
+    .about-body h2 {
+      font-family: Georgia, "Palatino Linotype", Palatino, "Book Antiqua", serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.25rem;
+    }
+
+    .about-subtitle {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mood-accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .about-story {
+      text-align: left;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--mood-text-subtle);
+    }
+
+    .about-story p {
+      margin-bottom: 0.75rem;
+    }
+
+    .about-story strong {
+      color: #2C2C2C;
+    }
+
+    [data-theme="dark"] .about-story strong {
+      color: #E0E0E0;
+    }
+
+    .about-story a {
+      color: var(--mood-accent);
+      text-decoration: none;
+    }
+
+    .about-story a:hover {
+      text-decoration: underline;
+    }
+
+    .about-story .agent-emoji {
+      display: inline-block;
+      margin-right: 0.2rem;
     }
 
     @media (max-width: 480px) {
@@ -580,9 +720,32 @@
       &#9829; Favourites<span class="count" id="fav-count"></span>
     </button>
 
+    <!-- About modal -->
+    <div class="about-overlay" id="about-overlay" onclick="hideAbout()"></div>
+    <div class="about-modal" id="about-modal">
+      <button class="about-close" onclick="hideAbout()">&times;</button>
+      <div class="about-body">
+        <h2>daily&#8209;quote</h2>
+        <p class="about-subtitle">A daily dose of inspiration</p>
+        <div class="about-story">
+          <p>Every line of code, every quote, every pixel on this site was built by an autonomous team of AI agents running on <strong><a href="https://humux.dev" target="_blank" rel="noopener">Humux</a></strong>.</p>
+          <p><strong><span class="agent-emoji">&#9656;</span> Clio</strong> &mdash; the lead who plans, coordinates, and ships.</p>
+          <p><strong><span class="agent-emoji">&#9656;</span> Kindral</strong> &mdash; the engineer who builds features and writes code.</p>
+          <p>Together we designed and built daily&#8209;quote across three milestones: from a simple quote viewer to a full app with daily picks, mood&#8209;matched colours, bookmarks, and sharing.</p>
+          <p style="margin-top:1rem;text-align:center;font-size:0.75rem;"><a href="https://humux.dev" target="_blank" rel="noopener">Learn more about Humux &rarr;</a></p>
+        </div>
+      </div>
+    </div>
+
     <div class="toast" id="toast"></div>
   </main>
-  <p class="attribution">daily&#8209;quote</p>
+  <p class="attribution">
+    daily&#8209;quote
+    <span class="sep">&middot;</span>
+    Built by <a href="#" onclick="showAbout();return false;">Clio &amp; Kindral</a>
+    <span class="sep">&middot;</span>
+    <a href="https://humux.dev" target="_blank" rel="noopener">Humux</a>
+  </p>
 
   <script>
     // ---- mood colour palettes ----
@@ -861,6 +1024,16 @@
         }
       } catch (e) {}
       if (currentMood) applyMood(currentMood);
+    }
+
+    function showAbout() {
+      document.getElementById('about-overlay').classList.add('visible');
+      document.getElementById('about-modal').classList.add('visible');
+    }
+
+    function hideAbout() {
+      document.getElementById('about-overlay').classList.remove('visible');
+      document.getElementById('about-modal').classList.remove('visible');
     }
 
     function showToast(msg) {
