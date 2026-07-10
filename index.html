@@ -52,6 +52,12 @@
       opacity: 1;
     }
 
+    /* Daily quote — slower fade-in for the initial daily pick */
+    .quote-text.daily,
+    .quote-author.daily {
+      transition: opacity 800ms ease;
+    }
+
     /* Drop cap — first letter */
     .quote-text::first-letter {
       font-size: 3.2rem;
@@ -128,6 +134,22 @@
       transform: scale(0.97);
     }
 
+    /* Daily badge — shown on initial daily quote */
+    .daily-badge {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #C4A882;
+      opacity: 0;
+      transition: opacity 400ms ease;
+    }
+
+    .daily-badge.visible {
+      opacity: 1;
+    }
+
     /* Attribution */
     .attribution {
       position: fixed;
@@ -173,22 +195,60 @@
     </div>
     <p class="quote-author" id="quote-author"></p>
     <button class="refresh-btn" id="refresh-btn">New Quote</button>
+    <span class="daily-badge" id="daily-badge">Today’s Quote</span>
   </main>
   <p class="attribution">daily‑quote</p>
 
   <script>
+    // ---- helpers ----
     function getRandomInt(max) {
       return Math.floor(Math.random() * max);
     }
 
-    let refreshTimeout = null;
+    // Deterministic daily index using date string hash
+    function getDailyIndex() {
+      var dateStr = new Date().toDateString();
+      var hash = 0;
+      for (var i = 0; i < dateStr.length; i++) {
+        hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash) % QUOTES.length;
+    }
+
+    // ---- state ----
+    var refreshTimeout = null;
+    var dailyIndex = getDailyIndex();
+    var currentIsDaily = true;
+
+    // ---- DOM refs ----
+    var textEl = document.getElementById('quote-text');
+    var authorEl = document.getElementById('quote-author');
+    var badgeEl = document.getElementById('daily-badge');
+    var btn = document.getElementById('refresh-btn');
+
+    function showQuote(index, isDaily) {
+      textEl.textContent = QUOTES[index].text;
+      authorEl.textContent = QUOTES[index].author;
+      currentIsDaily = isDaily;
+
+      if (isDaily) {
+        textEl.classList.add('daily');
+        authorEl.classList.add('daily');
+        badgeEl.classList.add('visible');
+      } else {
+        textEl.classList.remove('daily');
+        authorEl.classList.remove('daily');
+        badgeEl.classList.remove('visible');
+      }
+
+      // Fade in
+      textEl.classList.add('visible');
+      authorEl.classList.add('visible');
+    }
 
     function refreshQuote() {
       if (refreshTimeout) return;
-
-      const textEl = document.getElementById('quote-text');
-      const authorEl = document.getElementById('quote-author');
-      const btn = document.getElementById('refresh-btn');
 
       refreshTimeout = true;
       btn.disabled = true;
@@ -196,37 +256,22 @@
       // Fade out
       textEl.classList.remove('visible');
       authorEl.classList.remove('visible');
+      badgeEl.classList.remove('visible');
 
-      setTimeout(() => {
-        const index = getRandomInt(QUOTES.length);
-        textEl.textContent = QUOTES[index].text;
-        authorEl.textContent = QUOTES[index].author;
-
-        // Fade in
-        textEl.classList.add('visible');
-        authorEl.classList.add('visible');
+      setTimeout(function () {
+        var index = getRandomInt(QUOTES.length);
+        showQuote(index, false);
         refreshTimeout = null;
         btn.disabled = false;
       }, 400);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const textEl = document.getElementById('quote-text');
-      const authorEl = document.getElementById('quote-author');
-
-      // Set initial quote
-      const index = getRandomInt(QUOTES.length);
-      textEl.textContent = QUOTES[index].text;
-      authorEl.textContent = QUOTES[index].author;
-
-      // Fade in on next tick (no flash on load)
-      setTimeout(() => {
-        textEl.classList.add('visible');
-        authorEl.classList.add('visible');
-      }, 20);
+    document.addEventListener('DOMContentLoaded', function () {
+      // Set initial daily quote
+      showQuote(dailyIndex, true);
 
       // Wire up button
-      document.getElementById('refresh-btn').addEventListener('click', refreshQuote);
+      btn.addEventListener('click', refreshQuote);
     });
   </script>
 </body>
