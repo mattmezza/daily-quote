@@ -157,6 +157,84 @@
       transform: scale(0.97);
     }
 
+    /* Actions row */
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 2rem;
+    }
+
+    /* Share button */
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.4rem;
+      height: 2.4rem;
+      padding: 0;
+      background: transparent;
+      border: 1px solid var(--mood-border);
+      border-radius: 2px;
+      cursor: pointer;
+      color: var(--mood-text-subtle);
+      transition: all 250ms ease;
+    }
+
+    .share-btn:hover {
+      color: #2C2C2C;
+      border-color: var(--mood-accent);
+      background: var(--mood-accent-subtle);
+    }
+
+    .share-btn:active {
+      transform: scale(0.97);
+    }
+
+    .share-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .share-btn.shared svg {
+      stroke: var(--mood-accent);
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(1rem);
+      padding: 0.6rem 1.2rem;
+      font-size: 0.8rem;
+      color: #fff;
+      background: #2C2C2C;
+      border-radius: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 300ms ease;
+      white-space: nowrap;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .toast {
+        background: #E0E0E0;
+        color: #1A1A1A;
+      }
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     /* Daily badge — shown on initial daily quote */
     .daily-badge {
       display: inline-block;
@@ -202,6 +280,16 @@
         padding: 0.5rem 1.25rem;
         font-size: 0.75rem;
       }
+
+      .share-btn {
+        width: 2rem;
+        height: 2rem;
+      }
+
+      .share-btn svg {
+        width: 15px;
+        height: 15px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -233,8 +321,18 @@
       <span class="separator-dot"></span>
     </div>
     <p class="quote-author" id="quote-author"></p>
-    <button class="refresh-btn" id="refresh-btn">New Quote</button>
+    <div class="actions">
+      <button class="refresh-btn" id="refresh-btn">New Quote</button>
+      <button class="share-btn" id="share-btn" aria-label="Share this quote">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+          <polyline points="16 6 12 2 8 6"/>
+          <line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+      </button>
+    </div>
     <span class="daily-badge" id="daily-badge">Today&#8217;s Quote</span>
+    <div class="toast" id="toast"></div>
   </main>
   <p class="attribution">daily&#8209;quote</p>
 
@@ -320,6 +418,8 @@
     var authorEl = document.getElementById('quote-author');
     var badgeEl = document.getElementById('daily-badge');
     var btn = document.getElementById('refresh-btn');
+    var shareBtn = document.getElementById('share-btn');
+    var toastEl = document.getElementById('toast');
 
     function showQuote(index, isDaily) {
       var quote = QUOTES[index];
@@ -364,12 +464,66 @@
       }, 400);
     }
 
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('visible');
+      clearTimeout(toastEl._hide);
+      toastEl._hide = setTimeout(function () {
+        toastEl.classList.remove('visible');
+      }, 2000);
+    }
+
+    function shareQuote() {
+      var quote = textEl.textContent;
+      var author = authorEl.textContent;
+      var shareData = {
+        title: 'daily-quote',
+        text: quote + ' \u2014 ' + author,
+        url: 'https://daily-quote.products.humux.dev'
+      };
+
+      if (navigator.share) {
+        navigator.share(shareData).then(function () {
+          shareBtn.classList.add('shared');
+          setTimeout(function () { shareBtn.classList.remove('shared'); }, 1500);
+        }).catch(function () {
+          // user cancelled or error \u2014 do nothing
+        });
+      } else {
+        // Fallback: clipboard copy
+        var fullText = shareData.text + '\n' + shareData.url;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(fullText).then(function () {
+            showToast('Link copied');
+          }).catch(function () {
+            showToast('Could not copy');
+          });
+        } else {
+          // Last-resort fallback using textarea
+          var ta = document.createElement('textarea');
+          ta.value = fullText;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+            showToast('Link copied');
+          } catch (e) {
+            showToast('Could not copy');
+          }
+          document.body.removeChild(ta);
+        }
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
       // Set initial daily quote
       showQuote(dailyIndex, true);
 
-      // Wire up button
+      // Wire up buttons
       btn.addEventListener('click', refreshQuote);
+      shareBtn.addEventListener('click', shareQuote);
     });
   </script>
 </body>
