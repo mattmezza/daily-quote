@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>daily‑quote</title>
+  <title>daily&#8209;quote</title>
   <script src="quotes.js"></script>
   <style>
     /* Reset */
@@ -26,6 +26,15 @@
       justify-content: center;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      transition: background 600ms ease;
+    }
+
+    /* Mood colour variables — set by JS */
+    :root {
+      --mood-accent: #C4A882;
+      --mood-accent-subtle: rgba(196, 168, 130, 0.08);
+      --mood-border: #D4CEC6;
+      --mood-text-subtle: #8B7E74;
     }
 
     /* Main container */
@@ -63,8 +72,9 @@
       font-size: 3.2rem;
       line-height: 0.8;
       padding-right: 0.08em;
-      color: #C4A882;
+      color: var(--mood-accent);
       float: left;
+      transition: color 600ms ease;
     }
 
     /* Decorative separator */
@@ -82,14 +92,16 @@
       display: block;
       width: 1.5rem;
       height: 1px;
-      background: #C4A882;
+      background: var(--mood-accent);
+      transition: background 600ms ease;
     }
 
     .separator-dot {
       width: 3px;
       height: 3px;
       border-radius: 50%;
-      background: #C4A882;
+      background: var(--mood-accent);
+      transition: background 600ms ease;
     }
 
     /* Author */
@@ -98,9 +110,9 @@
       font-weight: 400;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #8B7E74;
+      color: var(--mood-text-subtle);
       opacity: 0;
-      transition: opacity 400ms ease;
+      transition: opacity 400ms ease, color 600ms ease;
     }
 
     .quote-author.visible {
@@ -116,9 +128,9 @@
       font-size: 0.8rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #8B7E74;
+      color: var(--mood-text-subtle);
       background: transparent;
-      border: 1px solid #D4CEC6;
+      border: 1px solid var(--mood-border);
       border-radius: 2px;
       cursor: pointer;
       transition: all 250ms ease;
@@ -126,8 +138,8 @@
 
     .refresh-btn:hover {
       color: #2C2C2C;
-      border-color: #C4A882;
-      background: rgba(196, 168, 130, 0.08);
+      border-color: var(--mood-accent);
+      background: var(--mood-accent-subtle);
     }
 
     .refresh-btn:active {
@@ -141,9 +153,9 @@
       font-size: 0.65rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #C4A882;
+      color: var(--mood-accent);
       opacity: 0;
-      transition: opacity 400ms ease;
+      transition: opacity 400ms ease, color 600ms ease;
     }
 
     .daily-badge.visible {
@@ -157,8 +169,9 @@
       left: 50%;
       transform: translateX(-50%);
       font-size: 0.7rem;
-      color: #D4CEC6;
+      color: var(--mood-border);
       letter-spacing: 0.04em;
+      transition: color 600ms ease;
     }
 
     @media (max-width: 480px) {
@@ -185,6 +198,21 @@
         transition-duration: 0s !important;
       }
     }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #1A1A1A;
+        color: #E0E0E0;
+      }
+
+      .quote-text {
+        color: #E0E0E0;
+      }
+
+      .refresh-btn:hover {
+        color: #E0E0E0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -195,11 +223,65 @@
     </div>
     <p class="quote-author" id="quote-author"></p>
     <button class="refresh-btn" id="refresh-btn">New Quote</button>
-    <span class="daily-badge" id="daily-badge">Today’s Quote</span>
+    <span class="daily-badge" id="daily-badge">Today&#8217;s Quote</span>
   </main>
-  <p class="attribution">daily‑quote</p>
+  <p class="attribution">daily&#8209;quote</p>
 
   <script>
+    // ---- mood colour palettes ----
+    var MOOD_COLORS = {
+      wisdom: {
+        light: { bg: '#ebe5f0', accent: '#7c6f9e', border: '#c8c0d8' },
+        dark:  { bg: '#1a1a2e', accent: '#b8a9d4', border: '#3a3a5e' }
+      },
+      motivation: {
+        light: { bg: '#f5ede0', accent: '#c4944a', border: '#dcc8a8' },
+        dark:  { bg: '#1e1a14', accent: '#e8b85a', border: '#3a3024' }
+      },
+      calm: {
+        light: { bg: '#e0ece8', accent: '#5a8f8a', border: '#b8d0cc' },
+        dark:  { bg: '#141e1c', accent: '#7ab8b0', border: '#2a3a36' }
+      },
+      joy: {
+        light: { bg: '#f8ece8', accent: '#c47a82', border: '#dcc0c4' },
+        dark:  { bg: '#1e1418', accent: '#e89aa8', border: '#3a2830' }
+      },
+      reflection: {
+        light: { bg: '#e4e0ec', accent: '#7e7ab5', border: '#c4c0d8' },
+        dark:  { bg: '#141420', accent: '#a09cd4', border: '#2e2c48' }
+      }
+    };
+
+    function getMoodColors(mood) {
+      var palette = MOOD_COLORS[mood] || MOOD_COLORS.wisdom;
+      var isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return isDark ? palette.dark : palette.light;
+    }
+
+    function applyMood(mood) {
+      var colors = getMoodColors(mood);
+      var root = document.documentElement;
+      root.style.setProperty('--mood-accent', colors.accent);
+      // Derive subtle accent (8% opacity of accent)
+      root.style.setProperty('--mood-accent-subtle', hexToRgba(colors.accent, 0.08));
+      root.style.setProperty('--mood-border', colors.border);
+      // Estimate readable text colour from background
+      document.body.style.background = colors.bg;
+    }
+
+    // Convert hex to rgba string
+    function hexToRgba(hex, alpha) {
+      var r = parseInt(hex.slice(1, 3), 16);
+      var g = parseInt(hex.slice(3, 5), 16);
+      var b = parseInt(hex.slice(5, 7), 16);
+      return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+    }
+
+    // Listen for dark mode changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+      if (currentMood) applyMood(currentMood);
+    });
+
     // ---- helpers ----
     function getRandomInt(max) {
       return Math.floor(Math.random() * max);
@@ -220,6 +302,7 @@
     var refreshTimeout = null;
     var dailyIndex = getDailyIndex();
     var currentIsDaily = true;
+    var currentMood = null;
 
     // ---- DOM refs ----
     var textEl = document.getElementById('quote-text');
@@ -228,9 +311,13 @@
     var btn = document.getElementById('refresh-btn');
 
     function showQuote(index, isDaily) {
-      textEl.textContent = QUOTES[index].text;
-      authorEl.textContent = QUOTES[index].author;
+      var quote = QUOTES[index];
+      textEl.textContent = quote.text;
+      authorEl.textContent = quote.author;
       currentIsDaily = isDaily;
+      currentMood = quote.mood;
+
+      applyMood(quote.mood);
 
       if (isDaily) {
         textEl.classList.add('daily');
