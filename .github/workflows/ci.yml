@@ -27,6 +27,13 @@ jobs:
           TAG="${GITHUB_REF#refs/tags/}"
           docker build -t daily-quote:${TAG} .
 
+      - name: Accept host key
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${DEPLOY_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
       - name: Push to products host
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
