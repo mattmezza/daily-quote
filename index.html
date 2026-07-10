@@ -124,7 +124,15 @@
       text-transform: uppercase;
       color: var(--mood-text-subtle);
       opacity: 0;
+      cursor: pointer;
       transition: opacity 400ms ease, color 600ms ease;
+    }
+
+    .quote-author:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: var(--mood-accent);
+      text-decoration-thickness: 1px;
     }
 
     .quote-author.visible {
@@ -210,6 +218,59 @@
     .star-btn.filled {
       color: var(--mood-accent);
       border-color: var(--mood-accent);
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      color: var(--mood-text-subtle);
+      opacity: 0;
+      transition: opacity 400ms ease;
+    }
+
+    .filter-bar.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .filter-author-label {
+      font-weight: 500;
+      color: var(--mood-accent);
+      transition: color 600ms ease;
+    }
+
+    .filter-clear {
+      background: transparent;
+      border: 1px solid var(--mood-border);
+      border-radius: 2px;
+      padding: 0.25rem 0.6rem;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--mood-text-subtle);
+      cursor: pointer;
+      transition: all 250ms ease;
+    }
+
+    .filter-clear:hover {
+      color: #2C2C2C;
+      border-color: var(--mood-accent);
+      background: var(--mood-accent-subtle);
+    }
+
+    .filter-clear:active {
+      transform: scale(0.97);
+    }
+
+    [data-theme="dark"] .filter-clear:hover {
+      color: #E0E0E0;
     }
 
     /* Refresh button */
@@ -705,6 +766,10 @@
       </div>
       <span class="daily-badge" id="daily-badge">Today&#8217;s Quote</span>
     </div>
+    <div class="filter-bar" id="filter-bar">
+      <span>Showing: <span class="filter-author-label" id="filter-author-label"></span></span>
+      <button class="filter-clear" id="filter-clear">Clear filter</button>
+    </div>
 
     <!-- Favourites view -->
     <div class="favourites-view" id="favourites-view">
@@ -949,6 +1014,7 @@
     var currentMood = null;
     var currentIndex = dailyIndex;
     var showingFavourites = false;
+    var activeAuthor = null;
 
     // ---- DOM refs ----
     var quoteViewEl = document.getElementById('quote-view');
@@ -965,17 +1031,63 @@
     var backBtn = document.getElementById('back-btn');
     var toastEl = document.getElementById('toast');
     var themeBtn = document.getElementById('theme-btn');
+    var filterBar = document.getElementById('filter-bar');
+    var filterLabel = document.getElementById('filter-author-label');
+    var filterClear = document.getElementById('filter-clear');
+
+    // ---- author filter helpers ----
+
+    function getFilteredQuotes() {
+      if (!activeAuthor) return QUOTES;
+      return QUOTES.filter(function (q) { return q.author === activeAuthor; });
+    }
+
+    function getFilteredDailyIndex() {
+      var dateStr = new Date().toDateString() + ':' + activeAuthor;
+      var hash = 0;
+      for (var i = 0; i < dateStr.length; i++) {
+        hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash) % getFilteredQuotes().length;
+    }
+
+    function updateFilterUI() {
+      if (activeAuthor) {
+        filterLabel.textContent = activeAuthor;
+        filterBar.classList.add('active');
+      } else {
+        filterBar.classList.remove('active');
+      }
+    }
+
+    function updateHash() {
+      if (activeAuthor) {
+        window.location.hash = 'author=' + encodeURIComponent(activeAuthor);
+      } else {
+        window.location.hash = '';
+      }
+    }
+
+    function readFilterFromHash() {
+      var hash = window.location.hash.slice(1);
+      if (!hash || hash.indexOf('author=') !== 0) return null;
+      var name = decodeURIComponent(hash.slice(7));
+      var found = QUOTES.some(function (q) { return q.author === name; });
+      return found ? name : null;
+    }
 
     function showQuote(index, isDaily) {
-      currentIndex = index;
-      var quote = QUOTES[index];
+      var filtered = getFilteredQuotes();
+      var quote = filtered[index];
+      currentIndex = QUOTES.indexOf(quote);
       textEl.textContent = quote.text;
       authorEl.textContent = quote.author;
       currentIsDaily = isDaily;
       currentMood = quote.mood;
 
       applyMood(quote.mood);
-      updateStarUI(index);
+      updateStarUI(currentIndex);
 
       if (isDaily) {
         textEl.classList.add('daily');
@@ -1004,7 +1116,8 @@
       badgeEl.classList.remove('visible');
 
       setTimeout(function () {
-        var index = getRandomInt(QUOTES.length);
+        var filtered = getFilteredQuotes();
+        var index = getRandomInt(filtered.length);
         showQuote(index, false);
         refreshTimeout = null;
         btn.disabled = false;
@@ -1048,10 +1161,11 @@
     function shareQuote() {
       var quote = textEl.textContent;
       var author = authorEl.textContent;
+      var shareUrl = 'https://daily-quote.products.humux.dev' + window.location.hash;
       var shareData = {
         title: 'daily-quote',
         text: quote + ' \u2014 ' + author,
-        url: 'https://daily-quote.products.humux.dev'
+        url: shareUrl
       };
 
       if (navigator.share) {
@@ -1116,8 +1230,17 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      // Set initial daily quote
-      showQuote(dailyIndex, true);
+      // Check for hash filter first
+      var hashAuthor = readFilterFromHash();
+      if (hashAuthor) {
+        activeAuthor = hashAuthor;
+        var filteredIdx = getFilteredDailyIndex();
+        showQuote(filteredIdx, true);
+        updateFilterUI();
+      } else {
+        // Set initial daily quote
+        showQuote(dailyIndex, true);
+      }
       updateFavCount();
 
       // Wire up buttons
@@ -1127,6 +1250,30 @@
       themeBtn.addEventListener('click', handleThemeToggle);
       favNavEl.addEventListener('click', showFavourites);
       backBtn.addEventListener('click', hideFavourites);
+
+      // Author click to filter
+      authorEl.addEventListener('click', function () {
+        var author = authorEl.textContent;
+        if (!author) return;
+        var count = QUOTES.filter(function (q) { return q.author === author; }).length;
+        if (count < 2) {
+          showToast('Only one quote from ' + author);
+          return;
+        }
+        activeAuthor = author;
+        var idx = getFilteredDailyIndex();
+        showQuote(idx, false);
+        updateFilterUI();
+        updateHash();
+      });
+
+      // Clear filter
+      filterClear.addEventListener('click', function () {
+        activeAuthor = null;
+        updateFilterUI();
+        updateHash();
+        showQuote(getDailyIndex(), true);
+      });
     });
   </script>
 </body>
