@@ -206,6 +206,206 @@
       stroke: var(--mood-accent);
     }
 
+    /* Star button */
+    .star-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.4rem;
+      height: 2.4rem;
+      padding: 0;
+      background: transparent;
+      border: 1px solid var(--mood-border);
+      border-radius: 2px;
+      cursor: pointer;
+      color: var(--mood-text-subtle);
+      transition: all 250ms ease;
+    }
+
+    .star-btn:hover {
+      border-color: var(--mood-accent);
+      background: var(--mood-accent-subtle);
+    }
+
+    .star-btn:active {
+      transform: scale(0.97);
+    }
+
+    .star-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linejoin: round;
+      transition: fill 250ms ease, stroke 250ms ease;
+    }
+
+    .star-btn.filled svg {
+      fill: var(--mood-accent);
+      stroke: var(--mood-accent);
+    }
+
+    /* Favourites link */
+    .favs-link {
+      display: inline-block;
+      margin-top: 0.75rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mood-border);
+      cursor: pointer;
+      transition: color 250ms ease;
+      user-select: none;
+    }
+
+    .favs-link:hover {
+      color: var(--mood-accent);
+    }
+
+    /* Favourites overlay */
+    .favs-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 300ms ease;
+    }
+
+    .favs-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .favs-panel {
+      background: #F9F6F1;
+      color: #2C2C2C;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 560px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      transform: translateY(1rem);
+      transition: transform 300ms ease;
+    }
+
+    .favs-overlay.open .favs-panel {
+      transform: translateY(0);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .favs-panel {
+        background: #1A1A1A;
+        color: #E0E0E0;
+      }
+      .favs-overlay { background: rgba(0,0,0,0.5); }
+    }
+
+    .favs-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--mood-border);
+    }
+
+    .favs-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .favs-close {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--mood-text-subtle);
+      padding: 0.25rem;
+      line-height: 1;
+      transition: color 250ms ease;
+    }
+
+    .favs-close:hover {
+      color: #2C2C2C;
+    }
+
+    .favs-list {
+      padding: 1rem 1.25rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .favs-empty {
+      padding: 1rem 1.25rem 1.5rem;
+      font-size: 0.8rem;
+      color: var(--mood-text-subtle);
+      text-align: center;
+      font-style: italic;
+    }
+
+    .fav-item {
+      padding: 0.75rem 0;
+      text-align: left;
+      border-bottom: 1px solid var(--mood-border);
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .fav-item:last-child {
+      border-bottom: none;
+    }
+
+    .fav-item-text {
+      flex: 1;
+      font-family: Georgia, "Palatino Linotype", Palatino, "Book Antiqua", serif;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .fav-item-author {
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--mood-text-subtle);
+      margin-top: 0.3rem;
+    }
+
+    .fav-item-unstar {
+      flex-shrink: 0;
+      background: none;
+      border: 1px solid var(--mood-border);
+      border-radius: 2px;
+      cursor: pointer;
+      color: var(--mood-accent);
+      padding: 0.3rem;
+      display: flex;
+      transition: all 250ms ease;
+    }
+
+    .fav-item-unstar svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--mood-accent);
+      stroke: var(--mood-accent);
+      stroke-width: 1.5;
+      stroke-linejoin: round;
+    }
+
+    .fav-item-unstar:hover {
+      background: var(--mood-accent-subtle);
+      border-color: var(--mood-accent);
+    }
+
     /* Toast notification */
     .toast {
       position: fixed;
@@ -281,14 +481,21 @@
         font-size: 0.75rem;
       }
 
-      .share-btn {
+      .share-btn,
+      .star-btn {
         width: 2rem;
         height: 2rem;
       }
 
-      .share-btn svg {
+      .share-btn svg,
+      .star-btn svg {
         width: 15px;
         height: 15px;
+      }
+
+      .favs-panel {
+        width: 95%;
+        max-height: 85vh;
       }
     }
 
@@ -323,6 +530,11 @@
     <p class="quote-author" id="quote-author"></p>
     <div class="actions">
       <button class="refresh-btn" id="refresh-btn">New Quote</button>
+      <button class="star-btn" id="star-btn" aria-label="Save to favourites">
+        <svg viewBox="0 0 24 24" id="star-icon" width="18" height="18">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </button>
       <button class="share-btn" id="share-btn" aria-label="Share this quote">
         <svg viewBox="0 0 24 24">
           <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
@@ -333,7 +545,21 @@
     </div>
     <span class="daily-badge" id="daily-badge">Today&#8217;s Quote</span>
     <div class="toast" id="toast"></div>
+    <p class="favs-link" id="favs-link">Favourites</p>
   </main>
+
+  <!-- Favourites overlay -->
+  <div class="favs-overlay" id="favs-overlay">
+    <div class="favs-panel">
+      <div class="favs-header">
+        <h2 class="favs-title">Favourites</h2>
+        <button class="favs-close" id="favs-close" aria-label="Close favourites">&times;</button>
+      </div>
+      <div class="favs-list" id="favs-list"></div>
+      <div class="favs-empty" id="favs-empty">No favourites yet. Tap the star on a quote to save it.</div>
+    </div>
+  </div>
+
   <p class="attribution">daily&#8209;quote</p>
 
   <script>
@@ -418,8 +644,15 @@
     var authorEl = document.getElementById('quote-author');
     var badgeEl = document.getElementById('daily-badge');
     var btn = document.getElementById('refresh-btn');
+    var starBtn = document.getElementById('star-btn');
+    var starIcon = document.getElementById('star-icon');
     var shareBtn = document.getElementById('share-btn');
     var toastEl = document.getElementById('toast');
+    var favsLink = document.getElementById('favs-link');
+    var favsOverlay = document.getElementById('favs-overlay');
+    var favsClose = document.getElementById('favs-close');
+    var favsList = document.getElementById('favs-list');
+    var favsEmpty = document.getElementById('favs-empty');
 
     function showQuote(index, isDaily) {
       var quote = QUOTES[index];
@@ -445,6 +678,114 @@
       authorEl.classList.add('visible');
     }
 
+    // ---- favourites ----
+    var FAV_KEY = 'daily-quote-favs';
+    var FAV_MAX = 100;
+
+    function getFavs() {
+      try {
+        var data = localStorage.getItem(FAV_KEY);
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveFavs(favs) {
+      localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+    }
+
+    function isFavourite(index) {
+      return getFavs().indexOf(index) !== -1;
+    }
+
+    function toggleFavourite(e) {
+      e.stopPropagation();
+      var index = currentIsDaily ? dailyIndex : currentRandomIndex;
+      var favs = getFavs();
+      var pos = favs.indexOf(index);
+      if (pos !== -1) {
+        favs.splice(pos, 1);
+        starBtn.classList.remove('filled');
+      } else {
+        if (favs.length >= FAV_MAX) {
+          showToast('Max ' + FAV_MAX + ' favourites');
+          return;
+        }
+        favs.push(index);
+        starBtn.classList.add('filled');
+      }
+      saveFavs(favs);
+    }
+
+    function updateStarState(index) {
+      if (isFavourite(index)) {
+        starBtn.classList.add('filled');
+      } else {
+        starBtn.classList.remove('filled');
+      }
+    }
+
+    function renderFavourites() {
+      var favs = getFavs();
+      if (favs.length === 0) {
+        favsList.innerHTML = '';
+        favsEmpty.style.display = 'block';
+        return;
+      }
+      favsEmpty.style.display = 'none';
+      var html = '';
+      for (var i = favs.length - 1; i >= 0; i--) {
+        var idx = favs[i];
+        var q = QUOTES[idx];
+        if (!q) continue;
+        html += '<div class="fav-item">' +
+          '<div class="fav-item-text">' +
+            '<div>' + escapeHtml(q.text) + '</div>' +
+            '<div class="fav-item-author">\u2014 ' + escapeHtml(q.author) + '</div>' +
+          '</div>' +
+          '<button class="fav-item-unstar" data-idx="' + idx + '" aria-label="Remove favourite">' +
+            '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' +
+          '</button>' +
+        '</div>';
+      }
+      favsList.innerHTML = html;
+
+      // Wire up unstar buttons
+      var unstars = favsList.querySelectorAll('.fav-item-unstar');
+      for (var j = 0; j < unstars.length; j++) {
+        unstars[j].addEventListener('click', function () {
+          var idx = parseInt(this.getAttribute('data-idx'));
+          var favs = getFavs();
+          var pos = favs.indexOf(idx);
+          if (pos !== -1) {
+            favs.splice(pos, 1);
+            saveFavs(favs);
+            renderFavourites();
+            updateStarState(currentIsDaily ? dailyIndex : currentRandomIndex);
+          }
+        });
+      }
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
+    function openFavourites() {
+      renderFavourites();
+      favsOverlay.classList.add('open');
+    }
+
+    function closeFavourites() {
+      favsOverlay.classList.remove('open');
+    }
+
+    // ---- refresh ----
+    var currentRandomIndex = null;
+
     function refreshQuote() {
       if (refreshTimeout) return;
 
@@ -458,7 +799,9 @@
 
       setTimeout(function () {
         var index = getRandomInt(QUOTES.length);
+        currentRandomIndex = index;
         showQuote(index, false);
+        updateStarState(index);
         refreshTimeout = null;
         btn.disabled = false;
       }, 400);
@@ -520,10 +863,24 @@
     document.addEventListener('DOMContentLoaded', function () {
       // Set initial daily quote
       showQuote(dailyIndex, true);
+      updateStarState(dailyIndex);
 
       // Wire up buttons
       btn.addEventListener('click', refreshQuote);
       shareBtn.addEventListener('click', shareQuote);
+      starBtn.addEventListener('click', toggleFavourite);
+      favsLink.addEventListener('click', openFavourites);
+      favsClose.addEventListener('click', closeFavourites);
+      favsOverlay.addEventListener('click', function (e) {
+        if (e.target === favsOverlay) closeFavourites();
+      });
+
+      // Keyboard: Escape closes favourites
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && favsOverlay.classList.contains('open')) {
+          closeFavourites();
+        }
+      });
     });
   </script>
 </body>
