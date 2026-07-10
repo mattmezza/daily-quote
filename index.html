@@ -16,6 +16,7 @@
   <meta name="twitter:description" content="A daily dose of inspiration — curated quotes to start your day.">
   <meta name="twitter:image" content="https://raw.githubusercontent.com/mattmezza/daily-quote/main/og-image.png">
   <script src="quotes.js"></script>
+  <script>(function(){try{var t=localStorage.getItem('daily-quote-theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
   <style>
     /* Reset */
     *, *::before, *::after {
@@ -37,7 +38,7 @@
       justify-content: center;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      transition: background 600ms ease;
+      transition: background 600ms ease, color 600ms ease;
     }
 
     /* Mood colour variables — set by JS */
@@ -161,8 +162,30 @@
       background: var(--mood-accent-subtle);
     }
 
+    [data-theme="dark"] .icon-btn:hover {
+      color: #E0E0E0;
+    }
+
     .icon-btn:active {
       transform: scale(0.97);
+    }
+
+    /* Theme toggle — sun/moon icon */
+    .theme-btn .sun-icon,
+    .theme-btn .moon-icon {
+      transition: opacity 300ms ease, transform 300ms ease;
+    }
+
+    .theme-btn .moon-icon {
+      display: none;
+    }
+
+    [data-theme="dark"] .theme-btn .sun-icon {
+      display: none;
+    }
+
+    [data-theme="dark"] .theme-btn .moon-icon {
+      display: inline;
     }
 
     .icon-btn svg {
@@ -417,11 +440,9 @@
       white-space: nowrap;
     }
 
-    @media (prefers-color-scheme: dark) {
-      .toast {
-        background: #E0E0E0;
-        color: #1A1A1A;
-      }
+    [data-theme="dark"] .toast {
+      background: #E0E0E0;
+      color: #1A1A1A;
     }
 
     .toast.visible {
@@ -484,23 +505,21 @@
       }
     }
 
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: #1A1A1A;
-        color: #E0E0E0;
-      }
+    [data-theme="dark"] body {
+      background: #1A1A1A;
+      color: #E0E0E0;
+    }
 
-      .quote-text {
-        color: #E0E0E0;
-      }
+    [data-theme="dark"] .quote-text {
+      color: #E0E0E0;
+    }
 
-      .refresh-btn:hover {
-        color: #E0E0E0;
-      }
+    [data-theme="dark"] .refresh-btn:hover {
+      color: #E0E0E0;
+    }
 
-      .back-btn:hover {
-        color: #E0E0E0;
-      }
+    [data-theme="dark"] .back-btn:hover {
+      color: #E0E0E0;
     }
   </style>
 </head>
@@ -525,6 +544,22 @@
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
             <polyline points="16 6 12 2 8 6"/>
             <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+        </button>
+        <button class="icon-btn theme-btn" id="theme-btn" aria-label="Toggle theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" width="18" height="18">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" width="18" height="18">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
         </button>
       </div>
@@ -576,7 +611,7 @@
 
     function getMoodColors(mood) {
       var palette = MOOD_COLORS[mood] || MOOD_COLORS.wisdom;
-      var isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       return isDark ? palette.dark : palette.light;
     }
 
@@ -599,9 +634,12 @@
       return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
     }
 
-    // Listen for dark mode changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
-      if (currentMood) applyMood(currentMood);
+    // Listen for system dark mode changes (only when no explicit user preference)
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+      if (!localStorage.getItem('daily-quote-theme')) {
+        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        if (currentMood) applyMood(currentMood);
+      }
     });
 
     // ---- helpers ----
@@ -763,6 +801,7 @@
     var favContentEl = document.getElementById('favourites-content');
     var backBtn = document.getElementById('back-btn');
     var toastEl = document.getElementById('toast');
+    var themeBtn = document.getElementById('theme-btn');
 
     function showQuote(index, isDaily) {
       currentIndex = index;
@@ -807,6 +846,21 @@
         refreshTimeout = null;
         btn.disabled = false;
       }, 400);
+    }
+
+    // ---- theme toggle ----
+    function handleThemeToggle() {
+      var current = document.documentElement.getAttribute('data-theme');
+      var next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try {
+        if (next === 'light') {
+          localStorage.removeItem('daily-quote-theme');
+        } else {
+          localStorage.setItem('daily-quote-theme', next);
+        }
+      } catch (e) {}
+      if (currentMood) applyMood(currentMood);
     }
 
     function showToast(msg) {
@@ -897,6 +951,7 @@
       btn.addEventListener('click', refreshQuote);
       shareBtn.addEventListener('click', shareQuote);
       starBtn.addEventListener('click', handleStarToggle);
+      themeBtn.addEventListener('click', handleThemeToggle);
       favNavEl.addEventListener('click', showFavourites);
       backBtn.addEventListener('click', hideFavourites);
     });
