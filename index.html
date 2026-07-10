@@ -130,10 +130,68 @@
       opacity: 1;
     }
 
+    /* Actions row */
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 2rem;
+    }
+
+    /* Icon buttons (share, star) */
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.4rem;
+      height: 2.4rem;
+      padding: 0;
+      background: transparent;
+      border: 1px solid var(--mood-border);
+      border-radius: 2px;
+      cursor: pointer;
+      color: var(--mood-text-subtle);
+      transition: all 250ms ease;
+    }
+
+    .icon-btn:hover {
+      color: #2C2C2C;
+      border-color: var(--mood-accent);
+      background: var(--mood-accent-subtle);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.97);
+    }
+
+    .icon-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .share-btn.shared svg {
+      stroke: var(--mood-accent);
+    }
+
+    /* Star button — filled state */
+    .star-btn.filled svg .star-fill {
+      fill: currentColor;
+    }
+
+    .star-btn.filled {
+      color: var(--mood-accent);
+      border-color: var(--mood-accent);
+    }
+
     /* Refresh button */
     .refresh-btn {
       display: inline-block;
-      margin-top: 2rem;
       padding: 0.6rem 1.5rem;
       font-family: system-ui, -apple-system, sans-serif;
       font-size: 0.8rem;
@@ -157,53 +215,189 @@
       transform: scale(0.97);
     }
 
-    /* Actions row */
-    .actions {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      margin-top: 2rem;
+    /* Daily badge — shown on initial daily quote */
+    .daily-badge {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mood-accent);
+      opacity: 0;
+      transition: opacity 400ms ease, color 600ms ease;
     }
 
-    /* Share button */
-    .share-btn {
-      display: inline-flex;
+    .daily-badge.visible {
+      opacity: 1;
+    }
+
+    /* Favourites nav link */
+    .favourites-nav {
+      display: block;
+      margin-top: 0.75rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--mood-text-subtle);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 250ms ease;
+    }
+
+    .favourites-nav:hover {
+      color: var(--mood-accent);
+    }
+
+    .favourites-nav .count {
+      display: inline-block;
+      margin-left: 0.3rem;
+      font-size: 0.65rem;
+      vertical-align: super;
+    }
+
+    /* Favourites view */
+    .favourites-view {
+      display: none;
+      text-align: left;
+    }
+
+    .favourites-view.active {
+      display: block;
+    }
+
+    /* Hide main view when favourites is active */
+    .quote-view.hidden {
+      display: none;
+    }
+
+    .favourites-header {
+      display: flex;
       align-items: center;
-      justify-content: center;
-      width: 2.4rem;
-      height: 2.4rem;
-      padding: 0;
-      background: transparent;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .favourites-title {
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mood-accent);
+    }
+
+    .back-btn {
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--mood-text-subtle);
+      background: none;
       border: 1px solid var(--mood-border);
       border-radius: 2px;
+      padding: 0.4rem 0.9rem;
       cursor: pointer;
-      color: var(--mood-text-subtle);
       transition: all 250ms ease;
     }
 
-    .share-btn:hover {
+    .back-btn:hover {
       color: #2C2C2C;
       border-color: var(--mood-accent);
       background: var(--mood-accent-subtle);
     }
 
-    .share-btn:active {
+    /* Favourites list */
+    .favourites-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .favourite-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 1rem;
+      border: 1px solid var(--mood-border);
+      border-radius: 2px;
+      transition: border-color 250ms ease;
+    }
+
+    .favourite-item:hover {
+      border-color: var(--mood-accent);
+    }
+
+    .favourite-item .fav-text {
+      flex: 1;
+      font-family: Georgia, "Palatino Linotype", Palatino, "Book Antiqua", serif;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .favourite-item .fav-author {
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--mood-text-subtle);
+      margin-top: 0.3rem;
+    }
+
+    .favourite-item .unstar-btn {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      background: transparent;
+      border: 1px solid var(--mood-border);
+      border-radius: 2px;
+      cursor: pointer;
+      color: var(--mood-accent);
+      transition: all 250ms ease;
+    }
+
+    .favourite-item .unstar-btn:hover {
+      background: var(--mood-accent-subtle);
+      border-color: var(--mood-accent);
       transform: scale(0.97);
     }
 
-    .share-btn svg {
-      width: 18px;
-      height: 18px;
-      fill: none;
+    .favourite-item .unstar-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
       stroke: currentColor;
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
 
-    .share-btn.shared svg {
-      stroke: var(--mood-accent);
+    /* Empty state */
+    .favourites-empty {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--mood-text-subtle);
+    }
+
+    .favourites-empty p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .favourites-empty .empty-icon {
+      margin-bottom: 1rem;
+      opacity: 0.4;
+    }
+
+    .favourites-empty .empty-icon svg {
+      width: 40px;
+      height: 40px;
+      stroke: var(--mood-text-subtle);
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     /* Toast notification */
@@ -233,22 +427,6 @@
     .toast.visible {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
-    }
-
-    /* Daily badge — shown on initial daily quote */
-    .daily-badge {
-      display: inline-block;
-      margin-top: 1.5rem;
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--mood-accent);
-      opacity: 0;
-      transition: opacity 400ms ease, color 600ms ease;
-    }
-
-    .daily-badge.visible {
-      opacity: 1;
     }
 
     /* Attribution */
@@ -281,14 +459,22 @@
         font-size: 0.75rem;
       }
 
-      .share-btn {
+      .icon-btn {
         width: 2rem;
         height: 2rem;
       }
 
-      .share-btn svg {
+      .icon-btn svg {
         width: 15px;
         height: 15px;
+      }
+
+      .favourite-item {
+        padding: 0.8rem;
+      }
+
+      .favourite-item .fav-text {
+        font-size: 0.85rem;
       }
     }
 
@@ -311,27 +497,54 @@
       .refresh-btn:hover {
         color: #E0E0E0;
       }
+
+      .back-btn:hover {
+        color: #E0E0E0;
+      }
     }
   </style>
 </head>
 <body>
   <main class="quote-container">
-    <p class="quote-text" id="quote-text"></p>
-    <div class="separator" aria-hidden="true">
-      <span class="separator-dot"></span>
+    <!-- Main quote view -->
+    <div class="quote-view" id="quote-view">
+      <p class="quote-text" id="quote-text"></p>
+      <div class="separator" aria-hidden="true">
+        <span class="separator-dot"></span>
+      </div>
+      <p class="quote-author" id="quote-author"></p>
+      <div class="actions">
+        <button class="refresh-btn" id="refresh-btn">New Quote</button>
+        <button class="icon-btn star-btn" id="star-btn" aria-label="Toggle favourite">
+          <svg viewBox="0 0 24 24">
+            <path class="star-fill" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </button>
+        <button class="icon-btn share-btn" id="share-btn" aria-label="Share this quote">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+        </button>
+      </div>
+      <span class="daily-badge" id="daily-badge">Today&#8217;s Quote</span>
     </div>
-    <p class="quote-author" id="quote-author"></p>
-    <div class="actions">
-      <button class="refresh-btn" id="refresh-btn">New Quote</button>
-      <button class="share-btn" id="share-btn" aria-label="Share this quote">
-        <svg viewBox="0 0 24 24">
-          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-          <polyline points="16 6 12 2 8 6"/>
-          <line x1="12" y1="2" x2="12" y2="15"/>
-        </svg>
-      </button>
+
+    <!-- Favourites view -->
+    <div class="favourites-view" id="favourites-view">
+      <div class="favourites-header">
+        <span class="favourites-title">Favourites</span>
+        <button class="back-btn" id="back-btn">Back</button>
+      </div>
+      <div id="favourites-content"></div>
     </div>
-    <span class="daily-badge" id="daily-badge">Today&#8217;s Quote</span>
+
+    <!-- Nav -->
+    <button class="favourites-nav" id="favourites-nav">
+      &#9829; Favourites<span class="count" id="fav-count"></span>
+    </button>
+
     <div class="toast" id="toast"></div>
   </main>
   <p class="attribution">daily&#8209;quote</p>
@@ -407,21 +620,152 @@
       return Math.abs(hash) % QUOTES.length;
     }
 
+    // ---- favourites (localStorage) ----
+    var FAV_KEY = 'daily-quote-favourites';
+    var FAV_MAX = 100;
+
+    function getFavourites() {
+      try {
+        var data = localStorage.getItem(FAV_KEY);
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveFavourites(favs) {
+      try {
+        localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+      } catch (e) {
+        // localStorage full or unavailable
+      }
+    }
+
+    function toggleFavourite(index) {
+      var favs = getFavourites();
+      var idx = favs.indexOf(index);
+      if (idx !== -1) {
+        favs.splice(idx, 1);
+      } else {
+        if (favs.length >= FAV_MAX) {
+          showToast('Max ' + FAV_MAX + ' favourites');
+          return false;
+        }
+        favs.push(index);
+      }
+      saveFavourites(favs);
+      return true;
+    }
+
+    function isFavourite(index) {
+      return getFavourites().indexOf(index) !== -1;
+    }
+
+    function updateStarUI(index) {
+      if (isFavourite(index)) {
+        starBtn.classList.add('filled');
+      } else {
+        starBtn.classList.remove('filled');
+      }
+    }
+
+    function updateFavCount() {
+      var favs = getFavourites();
+      favCountEl.textContent = favs.length > 0 ? '(' + favs.length + ')' : '';
+    }
+
+    function renderFavourites() {
+      var favs = getFavourites();
+      var container = favContentEl;
+
+      if (favs.length === 0) {
+        container.innerHTML =
+          '<div class="favourites-empty">' +
+            '<div class="empty-icon">' +
+              '<svg viewBox="0 0 24 24">' +
+                '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>' +
+              '</svg>' +
+            '</div>' +
+            '<p>No favourites yet.</p>' +
+            '<p style="margin-top:0.3rem;font-size:0.8rem;">Tap the star on a quote to save it here.</p>' +
+          '</div>';
+        return;
+      }
+
+      var html = '<ul class="favourites-list">';
+      for (var i = 0; i < favs.length; i++) {
+        var qi = favs[i];
+        var q = QUOTES[qi];
+        if (!q) continue;
+        html +=
+          '<li class="favourite-item">' +
+            '<div class="fav-text">' +
+              escapeHtml(q.text) +
+              '<div class="fav-author">' + escapeHtml(q.author) + '</div>' +
+            '</div>' +
+            '<button class="unstar-btn" data-index="' + qi + '" aria-label="Remove from favourites">' +
+              '<svg viewBox="0 0 24 24">' +
+                '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>' +
+              '</svg>' +
+            '</button>' +
+          '</li>';
+      }
+      html += '</ul>';
+      container.innerHTML = html;
+
+      // Wire unstar buttons
+      container.querySelectorAll('.unstar-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var idx = parseInt(this.getAttribute('data-index'), 10);
+          removeFavourite(idx);
+        });
+      });
+    }
+
+    function removeFavourite(index) {
+      var favs = getFavourites();
+      var idx = favs.indexOf(index);
+      if (idx !== -1) {
+        favs.splice(idx, 1);
+        saveFavourites(favs);
+        renderFavourites();
+        updateFavCount();
+        updateStarUI(currentIndex);
+        showToast('Removed from favourites');
+      }
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
     // ---- state ----
     var refreshTimeout = null;
     var dailyIndex = getDailyIndex();
     var currentIsDaily = true;
     var currentMood = null;
+    var currentIndex = dailyIndex;
+    var showingFavourites = false;
 
     // ---- DOM refs ----
+    var quoteViewEl = document.getElementById('quote-view');
     var textEl = document.getElementById('quote-text');
     var authorEl = document.getElementById('quote-author');
     var badgeEl = document.getElementById('daily-badge');
     var btn = document.getElementById('refresh-btn');
     var shareBtn = document.getElementById('share-btn');
+    var starBtn = document.getElementById('star-btn');
+    var favNavEl = document.getElementById('favourites-nav');
+    var favCountEl = document.getElementById('fav-count');
+    var favViewEl = document.getElementById('favourites-view');
+    var favContentEl = document.getElementById('favourites-content');
+    var backBtn = document.getElementById('back-btn');
     var toastEl = document.getElementById('toast');
 
     function showQuote(index, isDaily) {
+      currentIndex = index;
       var quote = QUOTES[index];
       textEl.textContent = quote.text;
       authorEl.textContent = quote.author;
@@ -429,6 +773,7 @@
       currentMood = quote.mood;
 
       applyMood(quote.mood);
+      updateStarUI(index);
 
       if (isDaily) {
         textEl.classList.add('daily');
@@ -487,7 +832,7 @@
           shareBtn.classList.add('shared');
           setTimeout(function () { shareBtn.classList.remove('shared'); }, 1500);
         }).catch(function () {
-          // user cancelled or error \u2014 do nothing
+          // user cancelled or error — do nothing
         });
       } else {
         // Fallback: clipboard copy
@@ -517,13 +862,43 @@
       }
     }
 
+    function showFavourites() {
+      showingFavourites = true;
+      quoteViewEl.classList.add('hidden');
+      favViewEl.classList.add('active');
+      renderFavourites();
+    }
+
+    function hideFavourites() {
+      showingFavourites = false;
+      quoteViewEl.classList.remove('hidden');
+      favViewEl.classList.remove('active');
+    }
+
+    // ---- toggle favourite ----
+    function handleStarToggle() {
+      if (toggleFavourite(currentIndex)) {
+        updateStarUI(currentIndex);
+        updateFavCount();
+        if (isFavourite(currentIndex)) {
+          showToast('Added to favourites');
+        } else {
+          showToast('Removed from favourites');
+        }
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
       // Set initial daily quote
       showQuote(dailyIndex, true);
+      updateFavCount();
 
       // Wire up buttons
       btn.addEventListener('click', refreshQuote);
       shareBtn.addEventListener('click', shareQuote);
+      starBtn.addEventListener('click', handleStarToggle);
+      favNavEl.addEventListener('click', showFavourites);
+      backBtn.addEventListener('click', hideFavourites);
     });
   </script>
 </body>
